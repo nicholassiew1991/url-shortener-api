@@ -14,6 +14,10 @@ class LinkServiceImpl(
   private val logger: Logger
 ) : LinkService {
 
+  override fun getUrl(code: String): String? {
+    return this.linkRepository.findByCode(code)?.url
+  }
+
   override fun create(url: String): Link {
     val code = this.linkCodeGenerator.generate(5)
     val link = Link(0, code, url, OffsetDateTime.now())

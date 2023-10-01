@@ -4,6 +4,8 @@ import io.github.nicholassiew1991.urlshortenerapi.links.repositories.entities.Li
 
 interface LinkService {
 
+  fun getUrl(code: String): String?
+
   fun create(url: String): Link
 
 }

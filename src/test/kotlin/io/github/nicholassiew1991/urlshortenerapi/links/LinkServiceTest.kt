@@ -10,11 +10,13 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.slf4j.Logger
+import java.time.OffsetDateTime
 import java.util.stream.Stream
 
 @ExtendWith(MockitoExtension::class)
@@ -27,6 +29,20 @@ class LinkServiceTest {
 
   @Mock
   private lateinit var logger: Logger
+
+  @ParameterizedTest
+  @MethodSource
+  fun testGetUrl(stubQueryResult: Link?, expectedIsEmpty: Boolean) {
+    //// Stub
+    `when`(linkRepository.findByCode(anyString())).thenReturn(stubQueryResult)
+
+    //// Act
+    val service = this.createService()
+    val link = service.getUrl(linkCodeGenerator.generate(5))
+
+    //// Assert
+    assertEquals(expectedIsEmpty, link.isNullOrBlank())
+  }
 
   @ParameterizedTest
   @MethodSource
@@ -52,6 +68,12 @@ class LinkServiceTest {
   }
 
   companion object {
+
+    @JvmStatic
+    fun testGetUrl(): Stream<Arguments> = Stream.of(
+      Arguments.of(Link(0, "code", "url", OffsetDateTime.now()), false),
+      Arguments.of(null, true)
+    )
 
     @JvmStatic
     fun testCreate(): Stream<Arguments> = Stream.of(
