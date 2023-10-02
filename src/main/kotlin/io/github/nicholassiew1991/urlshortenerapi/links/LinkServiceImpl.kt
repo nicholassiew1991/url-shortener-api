@@ -4,6 +4,7 @@ import io.github.nicholassiew1991.urlshortenerapi.links.linkcodegenerators.LinkC
 import io.github.nicholassiew1991.urlshortenerapi.links.repositories.LinkRepository
 import io.github.nicholassiew1991.urlshortenerapi.links.repositories.entities.Link
 import org.slf4j.Logger
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import java.time.OffsetDateTime
 
@@ -14,6 +15,7 @@ class LinkServiceImpl(
   private val logger: Logger
 ) : LinkService {
 
+  @Cacheable(cacheManager = "redisCacheManager", cacheNames = ["links"], key = "#a0")
   override fun getUrl(code: String): String? {
     return this.linkRepository.findByCode(code)?.url
   }
