@@ -17,6 +17,7 @@
   <properties>
     <java.version>20</java.version>
     <kotlin.version>1.9.10</kotlin.version>
+    <mockitoKotlin.version>5.1.0</mockitoKotlin.version>
   </properties>
 
   <dependencies>
@@ -56,6 +57,12 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito.kotlin</groupId>
+      <artifactId>mockito-kotlin</artifactId>
+      <version>${mockitoKotlin.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
