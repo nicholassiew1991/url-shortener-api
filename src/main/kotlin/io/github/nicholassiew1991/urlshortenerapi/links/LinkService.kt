@@ -8,4 +8,6 @@ interface LinkService {
 
   fun create(url: String): Link
 
+  fun createTaskForRedirectRecord(code: String)
+
 }

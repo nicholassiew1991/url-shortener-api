@@ -1,11 +1,15 @@
 package io.github.nicholassiew1991.urlshortenerapi.links
 
 import io.github.nicholassiew1991.urlshortenerapi.links.linkcodegenerators.RandomLinkCodeGenerator
+import io.github.nicholassiew1991.urlshortenerapi.links.models.RedirectRecordTaskDataModel
 import io.github.nicholassiew1991.urlshortenerapi.links.repositories.LinkRepository
 import io.github.nicholassiew1991.urlshortenerapi.links.repositories.entities.Link
+import io.github.nicholassiew1991.urlshortenerapi.tasks.constants.TaskNames
+import io.github.nicholassiew1991.urlshortenerapi.tasks.publishers.TaskPublisher
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -13,8 +17,11 @@ import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.Mockito
+import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.argThat
+import org.mockito.kotlin.eq
 import org.slf4j.Logger
 import java.time.OffsetDateTime
 import java.util.stream.Stream
@@ -26,6 +33,9 @@ class LinkServiceTest {
 
   @Mock
   private lateinit var linkRepository: LinkRepository
+
+  @Mock
+  private lateinit var taskPublisher: TaskPublisher
 
   @Mock
   private lateinit var logger: Logger
@@ -59,10 +69,22 @@ class LinkServiceTest {
     assertFalse(link.code.isBlank())
   }
 
+  @Test
+  fun testCreateTaskForRedirectRecord() {
+    //// Arrange
+    val code = "url_code"
+
+    //// Act & Assert
+    val service = this.createService()
+    assertDoesNotThrow { service.createTaskForRedirectRecord(code) }
+    verify(this.taskPublisher).publish(eq(TaskNames.CREATE_REDIRECT_RECORD), argThat { x -> x is RedirectRecordTaskDataModel && x.code == code })
+  }
+
   private fun createService(): LinkService {
     return LinkServiceImpl(
       this.linkCodeGenerator,
       this.linkRepository,
+      this.taskPublisher,
       this.logger
     )
   }

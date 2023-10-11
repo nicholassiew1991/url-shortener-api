@@ -18,6 +18,7 @@ class RedirectController(
   @GetMapping("/{code}")
   fun redirect(@PathVariable code: String): RedirectView {
     val url = this.linkService.getUrl(code) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
+    this.linkService.createTaskForRedirectRecord(code)
     return RedirectView(url)
   }
 
