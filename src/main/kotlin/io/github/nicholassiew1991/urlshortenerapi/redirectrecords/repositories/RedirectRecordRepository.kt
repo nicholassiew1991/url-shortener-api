@@ -4,4 +4,7 @@ import io.github.nicholassiew1991.urlshortenerapi.redirectrecords.repositories.e
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface RedirectRecordRepository : JpaRepository<RedirectRecord, Long> {
+
+  fun countByCode(code: String): Long
+
 }
