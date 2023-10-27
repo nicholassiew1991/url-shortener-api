@@ -1,5 +1,6 @@
 package io.github.nicholassiew1991.urlshortenerapi.links
 
+import io.github.nicholassiew1991.urlshortenerapi.links.exceptions.LinkCodeExistException
 import io.github.nicholassiew1991.urlshortenerapi.links.linkcodegenerators.RandomLinkCodeGenerator
 import io.github.nicholassiew1991.urlshortenerapi.links.models.RedirectRecordTaskDataModel
 import io.github.nicholassiew1991.urlshortenerapi.links.repositories.LinkRepository
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -56,9 +58,10 @@ class LinkServiceTest {
 
   @ParameterizedTest
   @MethodSource
-  fun testCreate(url: String) {
+  fun testCreateSuccess(url: String) {
     //// Stub
     `when`(linkRepository.save(Mockito.any(Link::class.java))).thenAnswer { x -> x.getArgument(0) }
+    `when`(linkRepository.existsByCode(anyString())).thenReturn(false)
 
     //// Act
     val service = this.createService()
@@ -67,6 +70,16 @@ class LinkServiceTest {
     //// Assert
     assertEquals(url, link.url)
     assertFalse(link.code.isBlank())
+  }
+
+  @Test
+  fun testCreateFailedWithLinkCodeExistException() {
+    //// Stub
+    `when`(linkRepository.existsByCode(anyString())).thenReturn(true)
+
+    //// Act & Assert
+    val service = this.createService()
+    assertThrows<LinkCodeExistException> { service.create("https://www.google.com")  }
   }
 
   @Test
@@ -98,7 +111,7 @@ class LinkServiceTest {
     )
 
     @JvmStatic
-    fun testCreate(): Stream<Arguments> = Stream.of(
+    fun testCreateSuccess(): Stream<Arguments> = Stream.of(
       Arguments.of("https://www.google.com")
     )
 

@@ -7,4 +7,6 @@ interface LinkRepository : JpaRepository<Link, Long> {
 
   fun findByCode(code: String): Link?
 
+  fun existsByCode(code: String): Boolean
+
 }
