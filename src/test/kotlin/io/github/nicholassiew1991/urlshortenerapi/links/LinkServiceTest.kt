@@ -86,10 +86,12 @@ class LinkServiceTest {
   fun testCreateTaskForRedirectRecord() {
     //// Arrange
     val code = "url_code"
+    val requestHeaders = mapOf<String, String>()
+    val requestQueryStrings = mapOf<String, String>()
 
     //// Act & Assert
     val service = this.createService()
-    assertDoesNotThrow { service.createTaskForRedirectRecord(code) }
+    assertDoesNotThrow { service.createTaskForRedirectRecord(code, requestHeaders, requestQueryStrings) }
     verify(this.taskPublisher).publish(eq(TaskNames.CREATE_REDIRECT_RECORD), argThat { x -> x is RedirectRecordTaskDataModel && x.code == code })
   }
 

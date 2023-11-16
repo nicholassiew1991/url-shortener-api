@@ -38,8 +38,12 @@ class LinkServiceImpl(
     return this.linkRepository.save(link)
   }
 
-  override fun createTaskForRedirectRecord(code: String) {
-    val taskData = RedirectRecordTaskDataModel(code)
+  override fun createTaskForRedirectRecord(
+    code: String,
+    requestHeaders: Map<String, String>,
+    requestQueryStrings: Map<String, String>
+  ) {
+    val taskData = RedirectRecordTaskDataModel(code, requestHeaders, requestQueryStrings)
     this.taskPublisher.publish(TaskNames.CREATE_REDIRECT_RECORD, taskData)
   }
 

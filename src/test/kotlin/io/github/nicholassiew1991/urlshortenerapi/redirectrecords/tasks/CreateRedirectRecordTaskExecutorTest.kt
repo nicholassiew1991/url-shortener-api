@@ -38,7 +38,7 @@ class CreateRedirectRecordTaskExecutorTest {
   fun testExecute() {
     //// Arrange
     val code = "this_is_code"
-    val taskData = "{\"code\":\"$code\"}"
+    val taskData = "{\"code\":\"$code\", \"requestHeaders\":{}, \"requestQueryStrings\":{}}"
 
     //// Act & Assert
     assertDoesNotThrow { this.executor.execute(taskData) }
