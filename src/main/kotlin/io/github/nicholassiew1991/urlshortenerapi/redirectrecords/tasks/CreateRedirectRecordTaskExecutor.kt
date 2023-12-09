@@ -21,9 +21,7 @@ class CreateRedirectRecordTaskExecutor(
     val taskData: RedirectRecordTaskDataModel = this.objectMapper.readValue(data)
     this.logger.info("Create RedirectRecord for: ${taskData.code}")
 
-    val requestHeadersJson = this.objectMapper.writeValueAsString(taskData.requestHeaders)
-    val requestQueryStringsJson = this.objectMapper.writeValueAsString(taskData.requestQueryStrings)
-    val redirectRecord = RedirectRecord(taskData.code, requestHeadersJson, requestQueryStringsJson)
+    val redirectRecord = RedirectRecord(taskData.code, taskData.requestHeaders, taskData.requestQueryStrings)
 
     this.redirectRecordRepository.save(redirectRecord)
   }

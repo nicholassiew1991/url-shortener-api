@@ -1,5 +1,6 @@
 package io.github.nicholassiew1991.urlshortenerapi.redirectrecords.repositories.entities
 
+import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -19,16 +20,18 @@ class RedirectRecord {
 
   var code: String = ""
 
-  var requestHeaders: String = ""
+  @Type(JsonType::class)
+  var requestHeaders: Map<String, String> = mapOf()
 
-  var requestQueryStrings: String = ""
+  @Type(JsonType::class)
+  var requestQueryStrings: Map<String, String> = mapOf()
 
   @Column(name = "redirect_datetime")
   var redirectDateTime: OffsetDateTime = OffsetDateTime.now()
 
   constructor()
 
-  constructor(code: String, requestHeaders: String, requestQueryStrings: String) {
+  constructor(code: String, requestHeaders: Map<String, String>, requestQueryStrings: Map<String, String>) {
     this.code = code
     this.requestHeaders = requestHeaders
     this.requestQueryStrings = requestQueryStrings
