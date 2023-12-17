@@ -43,7 +43,8 @@ class LinkServiceImpl(
     requestHeaders: Map<String, String>,
     requestQueryStrings: Map<String, String>
   ) {
-    val taskData = RedirectRecordTaskDataModel(code, requestHeaders, requestQueryStrings)
+    val now = OffsetDateTime.now()
+    val taskData = RedirectRecordTaskDataModel(code, requestHeaders, requestQueryStrings, now)
     this.taskPublisher.publish(TaskNames.CREATE_REDIRECT_RECORD, taskData)
   }
 

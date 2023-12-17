@@ -31,10 +31,11 @@ class RedirectRecord {
 
   constructor()
 
-  constructor(code: String, requestHeaders: Map<String, String>, requestQueryStrings: Map<String, String>) {
+  constructor(code: String, requestHeaders: Map<String, String>, requestQueryStrings: Map<String, String>, redirectDateTime: OffsetDateTime) {
     this.code = code
     this.requestHeaders = requestHeaders
     this.requestQueryStrings = requestQueryStrings
+    this.redirectDateTime = redirectDateTime
   }
 
 }

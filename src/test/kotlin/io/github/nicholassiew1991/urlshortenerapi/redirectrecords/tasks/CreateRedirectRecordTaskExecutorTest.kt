@@ -1,5 +1,6 @@
 package io.github.nicholassiew1991.urlshortenerapi.redirectrecords.tasks
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.github.nicholassiew1991.urlshortenerapi.redirectrecords.repositories.RedirectRecordRepository
 import io.github.nicholassiew1991.urlshortenerapi.tasks.executors.TaskExecutor
@@ -29,7 +30,8 @@ class CreateRedirectRecordTaskExecutorTest {
   fun setup() {
     this.executor = CreateRedirectRecordTaskExecutor(
       this.redirectRecordRepository,
-      jacksonObjectMapper(),
+      jacksonObjectMapper()
+        .registerModule(JavaTimeModule()),
       this.logger
     )
   }
@@ -38,7 +40,7 @@ class CreateRedirectRecordTaskExecutorTest {
   fun testExecute() {
     //// Arrange
     val code = "this_is_code"
-    val taskData = "{\"code\":\"$code\", \"requestHeaders\":{}, \"requestQueryStrings\":{}}"
+    val taskData = "{\"code\":\"$code\", \"requestHeaders\":{}, \"requestQueryStrings\":{}, \"redirectDateTime\": \"2023-12-17T17:13:27.256851+08:00\"}"
 
     //// Act & Assert
     assertDoesNotThrow { this.executor.execute(taskData) }
