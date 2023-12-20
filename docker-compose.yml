@@ -10,6 +10,10 @@ services:
     restart: always
     ports:
       - "10001:8080"
+    depends_on:
+      - url-shortener-postgres
+      - url-shortener-redis
+      - url-shortener-rabbitmq
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://url-shortener-postgres:5432/${DB_NAME}
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
@@ -17,6 +21,11 @@ services:
       SPRING_DATA_REDIS_HOST: url-shortener-redis
       SPRING_DATA_REDIS_PORT: 6379
       SPRING_DATA_REDIS_DATABASE: 0
+      SPRING_RABBITMQ_HOST: url-shortener-rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+
   url-shortener-postgres:
     image: postgres:16.0-alpine3.18
     container_name: url-shortener-postgres
@@ -35,6 +44,14 @@ services:
     restart: always
     ports:
       - "10003:6379"
+
+  url-shortener-rabbitmq:
+    image: rabbitmq:3.12.10-management-alpine
+    container_name: url-shortener-rabbitmq
+    restart: always
+    ports:
+      - "10004:5672"
+      - "10005:15672"
 
 networks:
   default:

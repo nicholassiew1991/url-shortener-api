@@ -1,27 +1,26 @@
 package io.github.nicholassiew1991.urlshortenerapi.tasks.publishers
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.github.nicholassiew1991.urlshortenerapi.core.constants.RedisTopicConstants
+import io.github.nicholassiew1991.urlshortenerapi.core.constants.MessageQueueNameConstants
 import io.github.nicholassiew1991.urlshortenerapi.tasks.constants.TaskNames
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.ArgumentMatcher
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.slf4j.Logger
-import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.amqp.core.AmqpTemplate
 
 @ExtendWith(MockitoExtension::class)
-class RedisTaskPublisherTest {
+class AmqpTaskPublisherTest {
 
   @Mock
-  private lateinit var redisTemplate: RedisTemplate<String, Any>
+  private lateinit var amqpTemplate: AmqpTemplate
 
   @Mock
   private lateinit var logger: Logger
@@ -30,8 +29,8 @@ class RedisTaskPublisherTest {
 
   @BeforeEach
   fun setup() {
-    this.taskPublisher = RedisTaskPublisher(
-      this.redisTemplate,
+    this.taskPublisher = AmqpTaskPublisher(
+      this.amqpTemplate,
       jacksonObjectMapper(),
       this.logger
     )
@@ -45,7 +44,6 @@ class RedisTaskPublisherTest {
 
     //// Act & Assert
     assertDoesNotThrow { this.taskPublisher.publish(taskName, data) }
-    //verify(this.redisTemplate).convertAndSend(eq(RedisTopicConstants.TASK), argThat(ArgumentMatcher<Map<String, String>> { x -> x["name"] == taskName }))
-    verify(this.redisTemplate).convertAndSend(eq(RedisTopicConstants.TASK), argThat<Map<String, String>> { x -> x["name"] == taskName && x["data"] == "\"$data\"" })
+    verify(this.amqpTemplate).convertAndSend(eq(MessageQueueNameConstants.TASK), argThat<Map<String, String>> { x -> x["name"] == taskName && x["data"] == "\"$data\"" })
   }
 }

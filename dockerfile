@@ -1,4 +1,4 @@
-ARG jdk_version=20.0.2_9
+ARG jdk_version=21.0.1_12
 
 FROM eclipse-temurin:${jdk_version}-jdk-alpine AS build
 

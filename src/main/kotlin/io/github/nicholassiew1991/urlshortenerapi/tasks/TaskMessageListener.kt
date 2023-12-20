@@ -1,29 +1,30 @@
 package io.github.nicholassiew1991.urlshortenerapi.tasks
 
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.github.nicholassiew1991.urlshortenerapi.core.constants.MessageQueueNameConstants
 import io.github.nicholassiew1991.urlshortenerapi.tasks.executors.TaskExecutor
 import org.slf4j.Logger
+import org.springframework.amqp.rabbit.annotation.RabbitHandler
+import org.springframework.amqp.rabbit.annotation.RabbitListener
 import org.springframework.beans.BeansException
 import org.springframework.beans.factory.BeanFactory
-import org.springframework.data.redis.connection.Message
-import org.springframework.data.redis.connection.MessageListener
 import org.springframework.stereotype.Component
 
+
 @Component
+@RabbitListener(queues = [MessageQueueNameConstants.TASK])
 class TaskMessageListener(
   private val beanFactory: BeanFactory,
-  private val objectMapper: ObjectMapper,
   private val logger: Logger
-) : MessageListener {
+) {
 
-  override fun onMessage(message: Message, pattern: ByteArray?) {
+  @RabbitHandler
+  fun handleReceiveTaskMessage(task: Map<String, String>) {
 
-    val map = this.objectMapper.readValue(message.toString(), object: TypeReference<Map<String, String>>() {})
-    val taskName = map["name"]!!
-    val taskData = map["data"]!!
+    val taskName = task["name"]!!
+    val taskData = task["data"]!!
 
-    this.logger.info("Received task message to execute - TaskName: $taskName")
+    this.logger.info("AMQP Received task message to execute - TaskName: $taskName")
 
     try {
       val executor = this.beanFactory.getBean(taskName, TaskExecutor::class.java)
